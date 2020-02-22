@@ -1,11 +1,22 @@
 package apps;
+import org.apache.commons.lang3.time.StopWatch;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.NClob;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import javax.swing.Timer;
 import structure.Node;
 public class A9 {
     //In Nano Seconds;
+    static boolean sss = false;
+    static StopWatch gg = new StopWatch();
     static long time;
     static int outputNum = -1;
-    private static void hillClimbing(Node[][] matrix, int k) {
+    static long clock;
+    private static int hillClimbing(Node[][] matrix, int k) {
+        StopWatch temp1 = new StopWatch();
+        temp1.start();
         //get old matrix output;
         int n = matrix.length;
         int m = matrix[0].length;
@@ -49,8 +60,12 @@ public class A9 {
             }
             outputNum = newCount;
             time = Nd;
-            if (outputNum != 101) c--;
+            if (outputNum != 22) c--;
+            if(temp1.getTime(TimeUnit.MILLISECONDS)> 300){
+                return 0;
+            }
         }
+        return 1;
     }
 
     private static int getRandom(int min, int max) {
@@ -71,45 +86,26 @@ public class A9 {
         }
     }
     public static void main(String[] args) {
-/*        Node node00 = new Node(0, 0, 3, 0);
-        Node node01 = new Node(0, 1, 3, 0);
-        Node node02 = new Node(0, 2, 2, 0);
-        Node node03 = new Node(0, 3, 4, 0);
-        Node node04 = new Node(0, 4, 3, 0);
-        Node node10 = new Node(1, 0, 2, 0);
-        Node node11 = new Node(1, 1, 2, 0);
-        Node node12 = new Node(1, 2, 2, 0);
-        Node node13 = new Node(1, 3, 1, 0);
-        Node node14 = new Node(1, 4, 1, 0);
-        Node node20 = new Node(2, 0, 4, 0);
-        Node node21 = new Node(2, 1, 3, 0);
-        Node node22 = new Node(2, 2, 1, 0);
-        Node node23 = new Node(2, 3, 3, 0);
-        Node node24 = new Node(2, 4, 4, 0);
-        Node node30 = new Node(3, 0, 2, 0);
-        Node node31 = new Node(3, 1, 3, 0);
-        Node node32 = new Node(3, 2, 1, 0);
-        Node node33 = new Node(3, 3, 1, 0);
-        Node node34 = new Node(3, 4, 3, 0);
-        Node node40 = new Node(4, 0, 1, 0);
-        Node node41 = new Node(4, 1, 1, 0);
-        Node node42 = new Node(4, 2, 3, 0);
-        Node node43 = new Node(4, 3, 2, 0);
-        Node node44 = new Node(4, 4, 0, 0);
-        Node[][] matrix = {{node00, node01, node02, node03, node04},
-                {node10, node11, node12, node13, node14},
-                {node20, node21, node22, node23, node24},
-                {node30, node31, node32, node33, node34},
-                {node40, node41, node42, node43, node44}
-        };
 
- */
-        Node[][] matrix = randomGen.generateMatrix(11);
+       Node[][] matrix; // = randomGen.generateMatrix(5);
+/*
         System.out.println();
         int k = 1;
-        hillClimbing(matrix, k);
+        long newEndTime = System.nanoTime();
+        long endtim = System.nanoTime() + 1000000;
+
+*/
+        gg.start();
+        while(1==1) {
+            matrix = randomGen.generateMatrix(5);
+            int x = hillClimbing(matrix, 1);
+            if(gg.getTime() == 1000) break;
+            if(x == 1) break;
+        }
         printResult(matrix);
         System.out.println(outputNum);
         System.out.println(time);
     }
 }
+
+
