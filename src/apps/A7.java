@@ -36,6 +36,30 @@ public class A7 {
         return false;
     }
 
+    public static Node[][] mutate(Node[][] matrix) {
+        int n = matrix.length;
+        int m = matrix[0].length;
+        int percent = 7;
+        for (int c = 0; c < percent; c++) {
+            //find location of new node;
+            int i = getRandom(0, n - 1);
+            int j = getRandom(0, m - 1);
+            while ((i == n - 1 && j == m - 1)) {
+                i = getRandom(0, n - 1);
+                j = getRandom(0, m - 1);
+            }
+            //get max value for new node;
+            int maxI = Math.max((n - i - 1),(i));
+            int maxJ = Math.max((m - j - 1), (j));
+            int maxNum = Math.max(maxI, maxJ);
+            int newValue = getRandom(1, maxNum);
+            //create new node, find old node;
+            Node newNode = new Node(i, j, newValue, 0, 0, 0);
+            matrix[i][j] = newNode;
+            //get new matrix output;
+            return matrix;
+        }
+    }
 
 
 
