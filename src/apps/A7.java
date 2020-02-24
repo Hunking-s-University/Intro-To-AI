@@ -1,10 +1,19 @@
 package apps;
 
+import org.apache.commons.lang3.ObjectUtils;
 import structure.Node;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 public class A7 {
+    private static Comparator<Node[][]> matrixCom = (n1, n2) -> getStep(n1) - getStep(n2);
+    private static int getStep(Node[][] matrix) {
+        int step = A3.findStep(matrix);
+        return step;
+    }
     public static Node[][] crossover(Node[][] matrix1, Node[][] matrix2) {
         int n = matrix1.length;
         int m = matrix1[0].length;
@@ -30,14 +39,19 @@ public class A7 {
     }
     public static boolean selection(Node[][] matrix, int k) {
         int n = matrix.length;
-        int step = A3.bfs(matrix, n - 1, n - 1);
+        int step = A3.findStep(matrix);
+        if (step < 0) {
+            return false;
+        }
         return step <= k;
     }
 
-    public static Node[][] mutate(Node[][] matrix) {
+    //randomly select n blocks and change to random values
+    public static Node[][] mutate(Node[][] matrix, int blocksToMutate) {
+        Node[][] mutMatrix = matrix;
         int n = matrix.length;
         int m = matrix[0].length;
-        int percent = 7;
+        int percent = blocksToMutate;
         for (int c = 0; c < percent; c++) {
             //find location of new node;
             int i = A4.getRandom(0, n - 1);
@@ -53,22 +67,94 @@ public class A7 {
             int newValue = A4.getRandom(1, maxNum);
             //create new node, find old node;
             Node newNode = new Node(i, j, newValue, 0, 0, 0);
-            matrix[i][j] = newNode;
+            mutMatrix[i][j] = newNode;
+
             //get new matrix output;
         }
         return matrix;
     }
+    public static int getGen(int k, Node[][] matrix) {
+        int n = matrix.length;
+        List<Node[][]> list = new LinkedList<>();
+        for(int i = 0;i < 10; i++) {
+            list.add(randomGen.generateMatrix(n));
+            System.out.println();
+        }
+        double optimalRatio;
+        int gen = 0;
+        while(k >= 2){
 
+            int size = list.size();
+
+            //crossover
+            for (int j = 0; j + 1 < size / 3; j++) {
+                for (int i = 1; i < 6; i++) {
+                    Node[][] temp = crossover(list.get(j), list.get(i));
+                    int count = 0;
+                        while(A3.findStep(temp) < 2 && count < 20) {
+                            temp = crossover(list.get(i), list.get(j));
+                            count++;
+                        }
+
+                    list.add(temp);
+                }
+            }
+
+            //mutate
+            for (int i = 0; i < size / 2; i++) {
+                Node[][] temp = mutate(list.get(i), 7);
+                while(A3.findStep(temp) < 2) temp = mutate(list.get(i), 7);
+                list.add(temp);
+            }
+
+            //sort list by k
+            Collections.sort(list, matrixCom);
+            //remove last half of puzzles list
+            int newSize = list.size();
+            for (int i = newSize - 1; i > newSize - size / 2; i--) {
+                list.remove(i);
+            }
+
+            //eliminate puzzles after set size
+            while (list.size() > 100) {
+                int j = list.size() - 1;
+                list.remove(j);
+            }
+            //
+            if (list.size() == 0) {
+                list.add(randomGen.generateMatrix(5));
+                list.add(randomGen.generateMatrix(5));
+                k = 5;
+                gen = 0;
+            }
+
+            //eliminate puzzles above step k
+            for (int i = 0; i < list.size(); i++) {
+                if (!selection(list.get(i), k)) {
+                    list.remove(i);
+                }
+            }
+
+            int numOptimal = 0;
+            for (int i = 0; i < list.size(); i++) {
+                if(A3.findStep(list.get(i)) == 2) numOptimal++;
+            }
+            optimalRatio = ((double) numOptimal / (double) list.size());
+            System.out.println("gen = " + gen  + " optimalRatio = "  + optimalRatio);
+
+            if (k > 2) {
+                k--;
+            }
+            gen++;
+            if (optimalRatio >= 0.9) break;
+        }
+        return gen;
+    }
 
 
 
     public static void main(String[] args) {
-        List<Node[][]> list = new LinkedList<>();
-        Node[][] matrix1 = randomGen.generateMatrix(5);
-        System.out.println();
-        Node[][] matrix2 = randomGen.generateMatrix(5);
-        list.add(matrix1);
-        list.add(matrix2);
+
 /*        int k = 10;
         while (k >= 2) {
             for (int i = 0; i < list.size(); i++) {
@@ -83,12 +169,9 @@ public class A7 {
         }
  */
         System.out.println();
-        Node[][] output = crossover(matrix1, matrix2);
-        for (Node[] ints : output) {
-            for (int j = 0; j < output[0].length; j++) {
-                System.out.print(ints[j].val + " ");
-            }
-            System.out.println();
-        }
+        int k = 2;
+        int n = 11;
+        int gg = getGen(k, null);
+        System.out.println("Ratio achieved at gen " + gg);//(getGen(k, n) - 1));
     }
 }
