@@ -1,8 +1,9 @@
 package apps;
+
 import structure.Node;
-import apps.A3;
-import java.util.*;
-import java.io.*;
+
+import java.util.LinkedList;
+import java.util.List;
 public class A7 {
     public static Node[][] crossover(Node[][] matrix1, Node[][] matrix2) {
         int n = matrix1.length;
@@ -30,10 +31,7 @@ public class A7 {
     public static boolean selection(Node[][] matrix, int k) {
         int n = matrix.length;
         int step = A3.bfs(matrix, n - 1, n - 1);
-        if (step <= k) {
-            return true;
-        }
-        return false;
+        return step <= k;
     }
 
     public static Node[][] mutate(Node[][] matrix) {
@@ -42,23 +40,23 @@ public class A7 {
         int percent = 7;
         for (int c = 0; c < percent; c++) {
             //find location of new node;
-            int i = getRandom(0, n - 1);
-            int j = getRandom(0, m - 1);
+            int i = A4.getRandom(0, n - 1);
+            int j = A4.getRandom(0, m - 1);
             while ((i == n - 1 && j == m - 1)) {
-                i = getRandom(0, n - 1);
-                j = getRandom(0, m - 1);
+                i = A4.getRandom(0, n - 1);
+                j = A4.getRandom(0, m - 1);
             }
             //get max value for new node;
             int maxI = Math.max((n - i - 1),(i));
             int maxJ = Math.max((m - j - 1), (j));
             int maxNum = Math.max(maxI, maxJ);
-            int newValue = getRandom(1, maxNum);
+            int newValue = A4.getRandom(1, maxNum);
             //create new node, find old node;
             Node newNode = new Node(i, j, newValue, 0, 0, 0);
             matrix[i][j] = newNode;
             //get new matrix output;
-            return matrix;
         }
+        return matrix;
     }
 
 
